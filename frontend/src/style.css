@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Reset --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+html {
+  color-scheme: dark light;
+}
+
+body {
+  min-height: 100vh;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+/* --- Reset --- */
+
+/* --- Variables --- */
+:root {
+  --bg-img-layer: -10;
+  --nav-layer: 10;
+}
+/* --- Variables --- */
+
+body {
+  /* background-image: url(https://static.vecteezy.com/system/resources/previews/000/966/017/original/various-pizzas-set-vector.jpg); */
+  background-image: url(https://pixy.org/download/800846/);
+  
+  background-position: center left;
+  background-color: whitesmoke;
+  display: flex;
+  flex-direction: column; 
+}
+* {
+  color:rgb(255, 250, 231);
+}
+header {
+  background-color: rgba(246, 227, 175, 0.8);
+  border-bottom: black solid 1px;
+  box-shadow: 0px 2px 10px rgb(56, 55, 55);
+  display: flex;
+}
+#mario {
+  width: 35px;
+  margin: 10px;
+  padding: 0 2px;
+  border: black solid 1px;
+  border-radius: 50%;
+}
+h2 {
+  font-family: 'Grandstander', cursive;
+  -webkit-text-fill-color: rgb(243, 44, 44);
+  -webkit-text-stroke: 1px;
+  text-shadow: 5px 2px 3px black;
+  color: rgba(0, 0, 0, 0.9);
+  margin-left: 10px;
+  margin-top: 6px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  border-radius: 0.1em;
+}
+
+#app {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+  background-color: rgba(7, 7, 7, 0.4);
+}
+#list{
+  background-color: rgba(7, 7, 7, 0.9);
+  border-radius: 0 2em 2em 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#list p{
+  font-family: 'Kosugi Maru', sans-serif;
+  margin: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px black;
+  cursor: pointer;
+}
+
+
+
+#selected {
+  background-color:rgba(7, 7, 7, 0.9);
+  border-radius: 2em;
+  padding: 20px;
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+}
+#p-name {
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: rgb(233, 227, 227);
+  text-shadow: 3px 3px 3px black;
+  font-family: 'Kosugi Maru', sans-serif;
+}
+.toppings {
+  font-family: 'Kosugi Maru', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: rgb(233, 227, 227);
+  text-shadow: 3px 3px 3px black;
+}
+#img {
+  min-width: 350px;
+  max-height: 300px;
+  border-radius: 2em;
+  border: rgb(233, 227, 227) solid 3px;
+  margin-bottom: 10px;
+}
+#amount {
+  background-color: rgb(235, 229, 229);
+  border-radius: 0.2em;
+  border:rgba(37, 17, 3, 0.8) solid 2px;
+  box-shadow: 0px 2px 10px rgb(56, 55, 55);
+  font-size: 30px;
+  text-align: center;
+  color: black;
+  font-family: 'Kosugi Maru', sans-serif;
+  max-width: 80px;
+  margin-bottom: 10px;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  background: rgb(233, 227, 227);
+  margin: 4px 3px;
+  color-scheme: light;
+  box-shadow: 0 0 2px rgb(40, 2, 2);
+}
+#add {
+  padding: 10px 20px;
+  font-family: 'Grandstander', cursive;
+  color:black;
+  background-color:  rgb(192, 18, 18);
+  -webkit-text-fill-color:rgb(233, 227, 227);
+  -webkit-text-stroke: 1px;
+  border-radius: 0.2em;
+  border:rgba(37, 17, 3, 0.8) solid 2px;
+  box-shadow: 0px 2px 10px rgb(56, 55, 55);
+  letter-spacing: 3px;
+  font-weight: 900;
+  font-size: 26px;
+  text-shadow: 3px 3px 4px black;
+  justify-self: left;
+}
+
+
+  
+#order {
+  width: 380px;
+  padding: 10px 20px;
+  background-color: rgba(238, 228, 228, 0.85);
+  border-radius: 2em 0.2em 0.2em 2em;
+  display:flex;
+  flex-direction: column;
+}
+#yo {
+  font-family: 'Kosugi Maru', sans-serif;
+  border-bottom: black solid 2px;
+  font-size: 30px;
+  margin-bottom: 10px;
+  color:black;
+}
+.ordering-pizza {
+  font-family: 'Kosugi Maru', sans-serif;
+  font-size: 18px;
+  color:black;
+}
+#order input {
+  background-color: rgb(235, 229, 229);
+  color: black;
+  width: 300px;
+  border-radius: 0.2em;
+  border:rgba(37, 17, 3, 0.8) solid 2px;
+  box-shadow: 0px 2px 10px rgb(56, 55, 55);
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 5px 20px;
+}
+#send {
+  margin: 44px 20px 20px 60px;
+  padding: 10px 20px;
+  font-family: 'Grandstander', cursive;
+  color:black;
+  background-color:rgb(192, 18, 18);
+  -webkit-text-fill-color:rgb(233, 227, 227);
+  -webkit-text-stroke: 1px;
+  border-radius: 0.2em;
+  border:rgba(37, 17, 3, 0.8) solid 2px;
+  box-shadow: 0px 2px 10px rgb(56, 55, 55);
+  letter-spacing: 3px;
+  font-weight: 900;
+  font-size: 26px;
+  text-shadow: 3px 3px 4px black;
+}
+.orderline{
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 20px;
+}

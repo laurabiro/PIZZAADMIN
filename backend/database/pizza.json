@@ -1,0 +1,95 @@
+[
+  {
+    "id": 1,
+    "name": "margherita",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " basil",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/margherita.jpg",
+    "status": false
+  },
+  {
+    "id": 2,
+    "name": "quattro formaggi",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " gorgonzola",
+      " parmezan",
+      " camambert",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/all-pizza.jpeg",
+    "status": false
+  },
+  {
+    "id": 3,
+    "name": "funghi",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " mushroom",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/funghi.jpeg",
+    "status": false
+  },
+  {
+    "id": 4,
+    "name": "pepperoni",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " pepperoni",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/pepperoni.jpg",
+    "status": false
+  },
+  {
+    "id": 5,
+    "name": "capricciose",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " ham",
+      " mushroom",
+      " artichoke",
+      " olives",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/all-pizza.jpeg",
+    "status": false
+  },
+  {
+    "id": 6,
+    "name": "grandma's",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " ham",
+      " egg",
+      " ruccola",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/grandmas.jpeg",
+    "status": false
+  },
+  {
+    "id": 7,
+    "name": "neapoiltan",
+    "toppings": [
+      "tomato sauce",
+      " tomato",
+      " garlic",
+      " olive oil",
+      " basil",
+      " mozzarella"
+    ],
+    "url": "http://localhost:3333/pictures/all-pizza.jpeg",
+    "status": false
+  }
+]
