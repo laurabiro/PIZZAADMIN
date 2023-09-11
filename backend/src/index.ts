@@ -17,7 +17,7 @@ server.use(express.json())
 type JSONData = Record<string, unknown>
 
 
-function readJSONFile(filePath: string):JSONData | null {
+const readJSONFile = (filePath: string):JSONData | null => {
   try {
     const fileData = fs.readFileSync(filePath, 'utf8')
     return JSON.parse(fileData);
@@ -68,13 +68,34 @@ server.post('/api/order', async (req: Request, res: Response) => {
 
 // ADMIN
 
+const findLastId = (pizzaData:PizzaList) => {
+
+  if (pizzaData.length === 0) {
+    return 0; // If there are no pizzas, start with ID 0
+  }
+  const lastPizza = pizzaData[pizzaData.length - 1];
+  return lastPizza.id;
+}
+
 server.post('/api/pizza', async (req:Request, res:Response) => {
   const fileData = req.body
+
   try {
   const fileDataString = JSON.stringify(fileData, null, 2)
+
   const uploadPath = __dirname + '/../database/' + 'pizza.json'
+  const pizzaData = JSON.parse(fs.readFileSync(uploadPath, 'utf-8'))
+  const newPizzaId = findLastId(pizzaData) + 1
+  const newPizza = {
+    id: newPizzaId,
+    ...req.body, 
+  }
+  pizzaData.push(newPizza)
+
   fs.writeFileSync(uploadPath, fileDataString)
-  res.send(fileDataString)
+
+  // res.send(fileDataString)
+  res.status(201).json(newPizza)
   } catch (error) {
     console.error('Error writing to file:', error)
     res.status(500).send('Error writing to file')
@@ -129,9 +150,9 @@ server.get('/api/admin', async (req:Request, res:Response) => {
 
 // ADMIN
 
-type ZOdResult<T> = { success: true, data: T} | {
+/* type ZOdResult<T> = { success: true, data: T} | {
   success: false, error: {issues: string[]}
-} 
+}  */
 
 server.delete("/api/pizza/:id", async (req:Request, res:Response) => {
   const id = +req.params.id
@@ -155,21 +176,6 @@ server.delete("/api/pizza/:id", async (req:Request, res:Response) => {
 
 })
 
-/* server.get("/api/pizza/:id", async (req:Request, res:Response) => {
-  const id = req.params.id
-
-
-  const pizzaData: Pizza = await JSON.parse(fs.readFileSync("./database/pizza.json", "utf-8"))
-
-  let filteredPizza: Pizza = pizzaData.find( pizza => pizza.id === id)
-
-  if(!filteredPizza){
-      return res.sendStatus(404)
-  }
-  
-  res.json(filteredPizza)
-
-}) */
 
 
 server.listen(3333) 
