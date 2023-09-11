@@ -27,8 +27,10 @@ const OrderSchema = z.object ({
   id: z.string(), 
   phone: z.string().optional(),
 })
+type OrderStatus = "new" | "pending";
 
-type Order = z.infer<typeof OrderSchema>
+type Order = z.infer<typeof OrderSchema> & { status: OrderStatus }
+
 
 // app state
 
@@ -55,11 +57,11 @@ const getOrders = async () => {
   const response = await axios.get("http://localhost:3333/api/admin")
 
   const result = OrderSchema.array().safeParse(response.data)
-  console.log(response.data[0])
+
   if(!result.success)
     orders = []
   else
-    orders = result.data 
+    orders = result.data.map((order) => ({ ...order, status: "new" }))
 }
 
 const deletePizza = async (id:number) => {
@@ -82,7 +84,7 @@ const postPizza = async () => {
       method: "POST",
       body: JSON.stringify(orderField),
     }
-    console.dir(config)
+    console.log(config)
     const response = await axios.post('http://localhost:3333/api/pizza', orderField)
     console.log('Data sent successfully:', response.data)
   } catch (error) {
@@ -96,7 +98,6 @@ const selectPizza = (id:number) => {
 
 const selectOrder = (id:string) => {
   selectedOrder = orders.find(order => order.id === id) || null
-  console.log(orders[0].id)
 }
 
 const update = (value:string, type:"name" ) => {
@@ -147,12 +148,12 @@ const renderMain = (pizzas: Pizza[]) => {
 const renderEditPizza = (pizza: Pizza) => {
 
   const content = `
-    <div id="pipi"> 
+    <div class="flex-column" id="pipi"> 
         <div>
-          <input class="m-2 text-black bg-white rounded-lg" id="name" value="${pizza.name}" class=" bg-white text-black"/>
+          <input class="m-2 text-black bg-white rounded-lg p-1 w-7/12" id="name" value="${pizza.name}" class=" bg-white text-black"/>
         </div>
         <div>
-          <input class="m-2 text-black bg-white rounded-lg" id="toppings" value="${toppingToString(pizza.toppings)}"/>
+          <input class="m-2 text-black bg-white rounded-lg p-1 w-7/12" id="toppings" value="${toppingToString(pizza.toppings)}"/>
         </div>
         <div>
           <button class="m-2 bg-white text-black p-1 rounded-lg" id="save">SAVE</button>
@@ -170,7 +171,7 @@ const renderEditPizza = (pizza: Pizza) => {
       console.log((event.target as HTMLInputElement).value, "toppings")
     }) */
 
-  document.getElementById("save")!.addEventListener("click", postListener)
+  /* document.getElementById("save")!.addEventListener("click", postListener) */
 }
 
 const renderOrders = (orders: Order[]) => {
@@ -180,7 +181,7 @@ const renderOrders = (orders: Order[]) => {
     
     ${orders.map(order =>
       `<div  class=" w-50 bg-base-100 shadow-xl m-2 p-3 rounded-lg">
-        <div class=" bg-yellow-400 p-1 rounded-lg w-11">NEW</div>
+        <div id="n-${order.id}" class=" bg-yellow-400 p-1 rounded-lg w-fit">${order.status}</div>
         <h2>${order.id}</h2>
         <p>${order.name}</p>
         <p> ordered amount: ${order.orderedPizzas.length} </p>
@@ -194,6 +195,8 @@ const renderOrders = (orders: Order[]) => {
   for(let i= 0; i< orders.length; i++){
     let id = orders[i].id
     document.getElementById(`o-${id}`)!.addEventListener("click", orderListener)
+    const statusDiv = document.getElementById(`n-${id}`);
+      statusDiv!.style.backgroundColor = orders[i].status === 'new' ? 'yellow' : 'aqua'; // Set your desired colors here
   }
   
 }
@@ -201,7 +204,7 @@ const renderOrders = (orders: Order[]) => {
 const renderToDo = (order: Order) => {
 
   const content = `
-    <div id="didi"> 
+    <div class=" p-2" id="didi"> 
       <div class=" text-black">
         <p>${order.id}</p>
         <p class=" font-bold">${order.orderedPizzas.join(" ,")}</p>
@@ -212,38 +215,33 @@ const renderToDo = (order: Order) => {
         <p>${order.phone}</p>
       </div>  
       <div>
-        <button class=" bg-slate-500 p-2 rounded-lg">SUBMIT</button>
+        <button id="s-${order.id}" class=" bg-slate-500 p-2 rounded-lg">SUBMIT</button>
         <button class=" bg-slate-500 p-2 rounded-lg">DONE</button>
       </div>
     </div>`
+  
 
   document.getElementById("todo")!.innerHTML = content
-  //orderedPizzas missing p
 
+  document.getElementById(`s-${order.id}`)!.addEventListener("click", submitListener)
 }
 
 const renderMenu = () => {
+
   const content = `
-  <div class="flex-column text-black rounded-lg">
+    <div class="flex-column text-black rounded-lg">
+      <a href="http://localhost:5173/" class="m-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+      </a>
+      <a class="m-2 ">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      </a>
+      <a class="m-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+      </a>
+    </div>`
 
-    <a href="http://localhost:5173/" class="m-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-    </a>
- 
- 
-    <a class="m-2 ">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-    </a>
-
-
-    <a class="m-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-    </a>
-  </div>
-
-  `
   document.getElementById("menu")!.innerHTML = content
-  
 }
 
 // eventlisteners
@@ -253,20 +251,16 @@ const init = async () => {
   await getOrders()
   
   renderMain(pizzas)
-  console.log(pizzas)
   renderOrders(orders)
-  console.log(orders)
   renderMenu()
 
 }
 
 const selectListener = (event: Event) => {
-  selectPizza(+(event.target as HTMLButtonElement).id)
+  selectPizza(+(event.target as HTMLButtonElement).id.split("-")[1])
 
-  
   if (selectedPizza)
     renderEditPizza(selectedPizza)
-    document.getElementById("name")!.innerHTML = (event.target as HTMLInputElement).name
     
 }
 
@@ -284,10 +278,22 @@ const postListener = () => {
 
 const orderListener = (event: Event) => {
   selectOrder((event.target as HTMLParagraphElement).id.split("-")[1])
-  console.log((event.target as HTMLParagraphElement))
 
   if(selectedOrder)
     renderToDo(selectedOrder)
+}
+
+const submitListener = (event: Event) => {
+  selectOrder((event.target as HTMLParagraphElement).id.split("-")[1])
+  console.log((event.target as HTMLParagraphElement).id.split("-")[1])
+  const orderId = (event.target as HTMLButtonElement).id.split("-")[1]
+  const orderToUpdate = orders.find((order) => order.id === orderId);
+
+  if (orderToUpdate) {
+    orderToUpdate.status = orderToUpdate.status === "new" ? "pending" : "new";
+    renderOrders(orders)
+  }
+
 }
 
 

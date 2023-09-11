@@ -81,7 +81,7 @@ const postPizzas = async () => {
       "phone": phone,
       "email": email,
       "date":date,
-      "id":id
+      "id":id,
     }
   
   try {
