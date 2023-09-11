@@ -2,7 +2,8 @@ import "./style.css";
 import axios from "axios";
 import { z } from "zod";
 
-// validation
+// validation ------------------------------------------------------------------------------------------------------------------------------------
+
 const PizzaSchema = z.object ({
   id: z.number(),
   name: z.string(),
@@ -10,10 +11,7 @@ const PizzaSchema = z.object ({
   url: z.string().optional(),
   status: z.boolean()
 })
-
 type Pizza = z.infer<typeof PizzaSchema>
-
-
 
 const OrderSchema = z.object ({
   orderedPizzas: z.string().array(),
@@ -28,28 +26,27 @@ const OrderSchema = z.object ({
   phone: z.string().optional(),
 })
 type OrderStatus = "new" | "pending";
-
 type Order = z.infer<typeof OrderSchema> & { status: OrderStatus }
 
-
-// app state
+// app state ------------------------------------------------------------------------------------------------------------------------------------
 
 let pizzas: Pizza[] = []
 let selectedPizza: Pizza | null = null
 let orders: Order[] = []
 let selectedOrder: Order | null = null
 
-// mutations
+// mutations ------------------------------------------------------------------------------------------------------------------------------------
 
 const getPizzas = async () => {
 
   const response = await axios.get("http://localhost:3333/api/pizza")
 
   const result = PizzaSchema.array().safeParse(response.data)
-  if (!result.success)
+  if (!result.success){
     pizzas = []
-  else
+  }else{
     pizzas = result.data
+  }    
 }
 
 const getOrders = async () => {
@@ -57,35 +54,35 @@ const getOrders = async () => {
   const response = await axios.get("http://localhost:3333/api/admin")
 
   const result = OrderSchema.array().safeParse(response.data)
-
-  if(!result.success)
+  if(!result.success){
     orders = []
-  else
+  }else{
     orders = result.data.map((order) => ({ ...order, status: "new" }))
+  }   
 }
 
 const deletePizza = async (id:number) => {
+
   const response = await axios.delete(`http://localhost:3333/api/pizza/${id}`)
   response
 }
 
-const postPizza = async () => {
+const postPizza = async (pizza: Pizza) => {
 
-    const name = selectedPizza!.name
-    const toppings = selectedPizza!.toppings
-
-    const orderField = {  
-      "toppings":toppings,
-      "name": name
-    }
+  if (!pizza) {
+    console.error('not pizza')
+    return;
+  }
   
   try {
     const config = {
       method: "POST",
-      body: JSON.stringify(orderField),
+      body: JSON.stringify(pizza),
     }
+
     console.log(config)
-    const response = await axios.post('http://localhost:3333/api/pizza', orderField)
+
+    const response = await axios.post('http://localhost:3333/api/pizza', pizza)
     console.log('Data sent successfully:', response.data)
   } catch (error) {
     console.error('Error sending data:', error)
@@ -100,15 +97,15 @@ const selectOrder = (id:string) => {
   selectedOrder = orders.find(order => order.id === id) || null
 }
 
-const update = (value:string, type:"name" ) => {
+/* const update = (value:string, type:"name" ) => {
   selectedPizza![type] = value
-}
+} */
 
 const toppingToString = (toppings: string[]) => {
   return toppings.join(" ,")
 } 
 
-// render
+// render ---------------------------------------------------------------------------------------------------------------------------------------
 
 const renderMain = (pizzas: Pizza[]) => {
   
@@ -162,16 +159,14 @@ const renderEditPizza = (pizza: Pizza) => {
 
   document.getElementById("select")!.innerHTML = content
   
-
-  
   document.getElementById("name")!.addEventListener("input", (event) => {
-    update((event.target as HTMLInputElement).value, "name")
+    selectedPizza!.name = (event.target as HTMLInputElement).value;
   })
-   /*  document.getElementById("toppings")!.addEventListener("input", event => {
-      console.log((event.target as HTMLInputElement).value, "toppings")
-    }) */
-
-  /* document.getElementById("save")!.addEventListener("click", postListener) */
+  document.getElementById("toppings")!.addEventListener("input", (event) => {
+    selectedPizza!.toppings = (event.target as HTMLInputElement).value.split(',') // Assuming toppings are comma-separated
+  })
+   
+  document.getElementById("save")!.addEventListener("click", postListener)
 }
 
 const renderOrders = (orders: Order[]) => {
@@ -195,15 +190,16 @@ const renderOrders = (orders: Order[]) => {
   for(let i= 0; i< orders.length; i++){
     let id = orders[i].id
     document.getElementById(`o-${id}`)!.addEventListener("click", orderListener)
-    const statusDiv = document.getElementById(`n-${id}`);
-      statusDiv!.style.backgroundColor = orders[i].status === 'new' ? 'yellow' : 'aqua'; // Set your desired colors here
+
+    const statusDiv = document.getElementById(`n-${id}`)
+    statusDiv!.style.backgroundColor = orders[i].status === 'new' ? 'yellow' : 'aqua'
   }
-  
 }
 
 const renderToDo = (order: Order) => {
 
   const content = `
+
     <div class=" p-2" id="didi"> 
       <div class=" text-black">
         <p>${order.id}</p>
@@ -216,19 +212,20 @@ const renderToDo = (order: Order) => {
       </div>  
       <div>
         <button id="s-${order.id}" class=" bg-slate-500 p-2 rounded-lg">SUBMIT</button>
-        <button class=" bg-slate-500 p-2 rounded-lg">DONE</button>
+        <button id="y-${order.id}" class=" bg-slate-500 p-2 rounded-lg">DONE</button>
       </div>
     </div>`
   
-
   document.getElementById("todo")!.innerHTML = content
 
   document.getElementById(`s-${order.id}`)!.addEventListener("click", submitListener)
+  document.getElementById(`y-${order.id}`)!.addEventListener("click", doneListener)
 }
 
 const renderMenu = () => {
 
   const content = `
+
     <div class="flex-column text-black rounded-lg">
       <a href="http://localhost:5173/" class="m-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"  stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
@@ -244,7 +241,7 @@ const renderMenu = () => {
   document.getElementById("menu")!.innerHTML = content
 }
 
-// eventlisteners
+// eventlisteners --------------------------------------------------------------------------------------------------------------------------------
 
 const init = async () => {
   await getPizzas()
@@ -253,48 +250,57 @@ const init = async () => {
   renderMain(pizzas)
   renderOrders(orders)
   renderMenu()
-
 }
 
 const selectListener = (event: Event) => {
   selectPizza(+(event.target as HTMLButtonElement).id.split("-")[1])
 
-  if (selectedPizza)
+  if (selectedPizza){
     renderEditPizza(selectedPizza)
-    
+  }    
 }
 
 const deleteListener = async (event: Event) => {
   let key = (event.target as HTMLButtonElement).id.split("-")[1]
   await deletePizza(+key)
-
   await getPizzas()
+
   renderMain(pizzas)
 }
 
 const postListener = () => {
-  postPizza()
+  postPizza(selectedPizza!)
 }
 
 const orderListener = (event: Event) => {
   selectOrder((event.target as HTMLParagraphElement).id.split("-")[1])
 
-  if(selectedOrder)
+  if(selectedOrder){
     renderToDo(selectedOrder)
+  } 
 }
 
 const submitListener = (event: Event) => {
   selectOrder((event.target as HTMLParagraphElement).id.split("-")[1])
-  console.log((event.target as HTMLParagraphElement).id.split("-")[1])
+
   const orderId = (event.target as HTMLButtonElement).id.split("-")[1]
-  const orderToUpdate = orders.find((order) => order.id === orderId);
+  const orderToUpdate = orders.find((order) => order.id === orderId)
 
   if (orderToUpdate) {
-    orderToUpdate.status = orderToUpdate.status === "new" ? "pending" : "new";
+    orderToUpdate.status = orderToUpdate.status === "new" ? "pending" : "new"
     renderOrders(orders)
   }
-
 }
 
+const doneListener = (event: Event) => {
+  selectOrder((event.target as HTMLParagraphElement).id.split("-")[1])
+
+  const orderId = (event.target as HTMLButtonElement).id.split("-")[1]
+  const orderToUpdate = orders.find((order) => order.id === orderId)
+
+  if (orderToUpdate) {
+    renderOrders(orders)
+  }
+}
 
 init()
